@@ -6,12 +6,23 @@ import { useResultContext } from "../../contexts/ResultContextProvider";
 import { Loading } from "..";
 
 const Results = () => {
-    const { results, isLoading, getResults, searchTerm } = useResultContext();
+    const {
+        results: { results, image_results },
+        isLoading,
+        getResults,
+        searchTerm,
+    } = useResultContext();
     const location = useLocation();
 
     useEffect(() => {
-        getResults("/search/q=Javascript&num=40");
-    }, []);
+        if (searchTerm) {
+            if (location.pathname === "/videos") {
+                getResults(`/search/q=${searchTerm} videos`);
+            } else {
+                getResults(`${location.pathname}/q={searchTerm}&num=40`);
+            }
+        }
+    }, [searchTerm, location.pathname]);
 
     if (isLoading) return <Loading />;
 
@@ -19,7 +30,7 @@ const Results = () => {
         case "/search":
             return (
                 <div className="flex flex-wrap justify-between space-y-6 sm:px-56">
-                    {results?.results?.map(({ link, title }, index) => (
+                    {results?.map(({ link, title }, index) => (
                         <div key={index} className="md:w-2/5 w-full">
                             <a href={link} target="_blank" rel="noreferrer">
                                 <p className="text-sm">
@@ -27,7 +38,9 @@ const Results = () => {
                                         ? link.substring(0, 30)
                                         : link}
                                 </p>
-                                <p className="text-lg hover:underline dark:text-blue-300 text-blue-700"></p>
+                                <p className="text-lg hover:underline dark:text-blue-300 text-blue-700">
+                                    {title}
+                                </p>
                             </a>
                         </div>
                     ))}
@@ -35,10 +48,57 @@ const Results = () => {
             );
 
         case "/images":
-            return "SEARCH";
+            return (
+                <div className="flex flex-wrap">
+                    {image_results?.map(
+                        ({ image, link: { href, title } }, index) => (
+                            <a
+                                href={href}
+                                key={index}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="sm:p-3 p-5"
+                            >
+                                <img
+                                    src={image?.src}
+                                    alt={title}
+                                    loading="lazy"
+                                />
+                                <p className="w-36 break-words text-sm mt-2"></p>
+                            </a>
+                        )
+                    )}
+                </div>
+            );
 
-        case "/videos":
-            return "SEARCH";
+        case "/news":
+            return (
+                <div className="flex flex-wrap justify-between space-y-6 sm:px-56 items-center">
+                    {/* {news?.map(({ links, id, source, title }) => (
+                        <div key={id} className="md:w-2/5 w-full">
+                            <a
+                                className="hover:underline"
+                                href={links?.[0].href}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                <p className="text-lg dark:text-blue-300 text-blue-700">
+                                    {title}
+                                </p>
+                                <div className="flex gap-4">
+                                    <a
+                                        href={source?.href}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        {source?.href}
+                                    </a>
+                                </div>
+                            </a>
+                        </div>
+                    ))} */}
+                </div>
+            );
 
         default:
             return "ERROR!";
