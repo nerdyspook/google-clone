@@ -92,9 +92,9 @@ const Results = () => {
         case "/videos":
             return (
                 <div className="flex flex-wrap ">
-                    {results?.map((video, index) => (
+                    {results.map((video, index) => (
                         <div key={index} className="p-2">
-                            {console.log(video.additional_links)}
+                            {/* {console.log(video.additional_links)} */}
                             {video.additional_links?.[0]?.href && (
                                 <ReactPlayer
                                     url={video.additional_links?.[0].href}
